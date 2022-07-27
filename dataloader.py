@@ -32,8 +32,8 @@ def load_data(baseaddr, existing_table_names):
 
     if extension == '.txt':
         data = handle_text_data(baseaddr, existing_table_names)
-    # elif extension == '.json':
-    #     data = handle_json_data(baseaddr, existing_table_names)
+    elif extension == '.json':
+        data = handle_json_data(baseaddr, existing_table_names)
     # elif extension in ['.csv', '.xlsx']:
     #     data = handle_excel_data(baseaddr, existing_table_names)
     # elif extension == '':
@@ -66,3 +66,26 @@ def handle_text_data(baseaddr, existing_table_names):
             result['rows'].append(row_list)
 
         yield result
+
+
+def handle_json_data(baseaddr, existing_table_names):
+    for filename in os.listdir(baseaddr):
+        if filename == 'columns_format.json':
+            continue
+        elif filename in existing_table_names:
+            yield False
+
+        filename_without_extension = os.path.splitext(filename)[0]
+        result = {
+            'table_name': filename_without_extension,
+            'rows': []
+        }
+        d = load_json(os.path.join(baseaddr, filename))
+        for i in range(len(d)):
+            for key in d[i]:
+                if d[i][key] == '':
+                    d[i][key] = None
+            result['rows'].append(list(d[i].values()))
+
+        yield result
+
