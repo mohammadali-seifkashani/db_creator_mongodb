@@ -1,5 +1,4 @@
 import pymongo
-
 from dataloader import load_data
 from utils import time_decorator
 
@@ -16,27 +15,27 @@ class MongoDB:
         pass
 
     @time_decorator
-    def fill_table(self, collection_name, data):
-        table = self.db[collection_name]
-        table.insert_many(data)
+    def fill_collection(self, collection_name, data):
+        collection = self.db[collection_name]
+        collection.insert_many(data)
 
     @time_decorator
     def fill(self, baseaddr, columns):
-        existing_table_names = self.get_collection_names()
+        existing_collection_names = self.get_collection_names()
         if 'general' in columns:
-            for i, data in enumerate(load_data(baseaddr, existing_table_names)):
-                print(i, data['table_name'])
-                if not data:
+            for i, data in enumerate(load_data(baseaddr, existing_collection_names)):
+                print(i, data['collection_name'])
+                if not data['rows']:
                     continue
                 json_data = [dict(zip(columns['general'], r)) for r in data['rows']]
-                self.fill_table(data['table_name'], json_data)
+                self.fill_collection(data['collection_name'], json_data)
         else:
-            for i, data in enumerate(load_data(baseaddr, existing_table_names)):
-                print(i, data['table_name'])
-                if not data:
+            for i, data in enumerate(load_data(baseaddr, existing_collection_names)):
+                print(i, data['collection_name'])
+                if not data['rows']:
                     continue
-                json_data = [dict(zip(columns[data['table_name']], r)) for r in data['rows']]
-                self.fill_table(data['table_name'], json_data)
+                json_data = [dict(zip(columns[data['collection_name']], r)) for r in data['rows']]
+                self.fill_collection(data['collection_name'], json_data)
 
     @staticmethod
     def remove(dbname):
@@ -58,7 +57,7 @@ class MongoDB:
         if columns == ['*']:
             yield from self.db[collection_name].find()
         else:
-            columns_dict = {column:1 for column in columns}
+            columns_dict = {column: 1 for column in columns}
             columns_dict['_id'] = 0
             yield from self.db[collection_name].find({}, columns_dict)
 
@@ -78,3 +77,16 @@ class MongoDB:
         for i, t in enumerate(collection_names):
             print(i, t)
             yield self.get_collection(t, columns)
+
+    def get_collection_to_file(self, collection_name, format):
+        collection = self.get_collection(collection_name)
+        if format == 'txt':
+            pass
+        elif format == 'json':
+            pass
+        elif format == 'xlsx':
+            pass
+        elif format == 'csv':
+            pass
+        elif format == 'pkl':
+            pass

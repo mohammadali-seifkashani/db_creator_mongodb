@@ -1,10 +1,14 @@
+import os.path
+
 from database import MongoDB
+from utils import load_json
 
 
 def main():
     geodb = MongoDB('test')
-    geodb.create_collection('a')
-    print(geodb.db.list_collection_names())
+    baseaddr = './data'
+    columns = load_json(os.path.join(baseaddr, 'columns_format.json'))
+    geodb.fill(baseaddr, columns)
 
 
 if __name__ == '__main__':
