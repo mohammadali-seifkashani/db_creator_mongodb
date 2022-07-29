@@ -42,11 +42,11 @@ def load_data(baseaddr, existing_table_names):
     return data
 
 
-def handle_text_data(baseaddr, existing_table_names):
+def handle_text_data(baseaddr, existing_column_names):
     for filename in os.listdir(baseaddr):
         if filename == 'columns_format.json':
             continue
-        elif filename in existing_table_names:
+        elif filename in existing_column_names:
             yield False
 
         filename_without_extension = os.path.splitext(filename)[0]
