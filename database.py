@@ -1,8 +1,9 @@
 import os
 
+import pandas as pd
 import pymongo
 from dataloader import load_data
-from utils import time_decorator, save_json
+from utils import time_decorator, save_json, save_pickle
 
 
 class MongoDB:
@@ -99,8 +100,16 @@ class MongoDB:
                 result[row[key_field]] = row
             save_json(result, out_address)
         elif extension == '.xlsx':
-            pass
+            d = {}
+            for row in collection:
+                row.pop('_id')
+                d[row[key_field]] = row
+            df = pd.DataFrame.from_dict(d, orient='index', columns=list(row.keys()))
+            df.to_excel(out_address)
         elif extension == '.csv':
-            pass
-        elif extension == '.pkl':
-            pass
+            d = {}
+            for row in collection:
+                row.pop('_id')
+                d[row[key_field]] = row
+            df = pd.DataFrame.from_dict(d, orient='index', columns=list(row.keys()))
+            df.to_csv(out_address)
