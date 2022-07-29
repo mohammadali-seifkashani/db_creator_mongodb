@@ -2,7 +2,7 @@ import os
 
 import pymongo
 from dataloader import load_data
-from utils import time_decorator
+from utils import time_decorator, save_json
 
 
 class MongoDB:
@@ -79,10 +79,9 @@ class MongoDB:
         for i, t in enumerate(collection_names):
             print(i, t)
             result[t] = self.get_collection(t, columns)
-
         return result
 
-    def collection_to_file(self, collection_name, out_address):
+    def collection_to_file(self, collection_name, out_address, key_field):
         collection = self.get_collection(collection_name)
         extension = os.path.splitext(out_address)[1]
         if extension == '.txt':
@@ -94,7 +93,11 @@ class MongoDB:
             f.write(result)
             f.close()
         elif extension == '.json':
-            pass
+            result = {}
+            for row in collection:
+                row.pop('_id')
+                result[row[key_field]] = row
+            save_json(result, out_address)
         elif extension == '.xlsx':
             pass
         elif extension == '.csv':
