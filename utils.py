@@ -1,3 +1,4 @@
+from time import time
 import json
 
 
@@ -11,13 +12,11 @@ def load_json(address):
         return json.load(f)
 
 
-from time import time
-
-
 def time_decorator(func):
     def wrap_func(*args, **kwargs):
         t1 = time()
         result = func(*args, **kwargs)
         print('spent time:', time() - t1)
         return result
+
     return wrap_func

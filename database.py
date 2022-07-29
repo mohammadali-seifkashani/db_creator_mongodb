@@ -61,13 +61,6 @@ class MongoDB:
             columns_dict['_id'] = 0
             yield from self.db[collection_name].find({}, columns_dict)
 
-    def get_database_generator(self, columns):
-        collection_names = self.get_collection_names()
-        # self.cursor.itersize = 10000
-        for i, t in enumerate(collection_names):
-            print(i, t)
-            yield self.get_collection(t, columns)
-
     def get_database(self, columns):
         result = {}
         collection_names = self.get_collection_names()
@@ -77,6 +70,13 @@ class MongoDB:
             result[t] = self.get_collection(t, columns)
 
         return result
+
+    def get_database_generator(self, columns):
+        collection_names = self.get_collection_names()
+        # self.cursor.itersize = 10000
+        for i, t in enumerate(collection_names):
+            print(i, t)
+            yield self.get_collection(t, columns)
 
     def get_collection_to_file(self, collection_name, format):
         collection = self.get_collection(collection_name)
