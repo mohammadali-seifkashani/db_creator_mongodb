@@ -1,6 +1,9 @@
+import os
+
+import pandas as pd
 import pymongo
 from dataloader import load_data
-from utils import time_decorator
+from utils import time_decorator, save_json, save_pickle
 
 
 class MongoDB:
@@ -46,6 +49,8 @@ class MongoDB:
         return self.db.list_collection_names()
 
     def get_collection(self, collection_name, columns=['*']):
+        if collection_name not in self.get_collection_names():
+            raise Exception('collection does not exist.')
         if columns == ['*']:
             return self.db[collection_name].find()
         else:
@@ -78,15 +83,34 @@ class MongoDB:
             print(i, t)
             yield self.get_collection(t, columns)
 
-    def get_collection_to_file(self, collection_name, format):
+    def collection_to_file(self, collection_name, out_address, key_field):
         collection = self.get_collection(collection_name)
-        if format == 'txt':
-            pass
-        elif format == 'json':
-            pass
-        elif format == 'xlsx':
-            pass
-        elif format == 'csv':
-            pass
-        elif format == 'pkl':
-            pass
+        extension = os.path.splitext(out_address)[1]
+        if extension == '.txt':
+            result = ''
+            for row in collection:
+                row_without_None = ['' if i is None else i for i in list(row.values())[1:]]
+                result += '\t'.join(row_without_None) + '\n'
+            f = open(out_address, 'w')
+            f.write(result)
+            f.close()
+        elif extension == '.json':
+            result = {}
+            for row in collection:
+                row.pop('_id')
+                result[row[key_field]] = row
+            save_json(result, out_address)
+        elif extension == '.xlsx':
+            d = {}
+            for row in collection:
+                row.pop('_id')
+                d[row[key_field]] = row
+            df = pd.DataFrame.from_dict(d, orient='index', columns=list(row.keys()))
+            df.to_excel(out_address)
+        elif extension == '.csv':
+            d = {}
+            for row in collection:
+                row.pop('_id')
+                d[row[key_field]] = row
+            df = pd.DataFrame.from_dict(d, orient='index', columns=list(row.keys()))
+            df.to_csv(out_address)
