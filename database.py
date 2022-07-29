@@ -69,6 +69,7 @@ class MongoDB:
             yield self.get_collection(t, columns)
 
     def get_database(self, columns):
+        result = {}
         collection_names = self.get_collection_names()
         # self.cursor.itersize = 10000
         for i, t in enumerate(collection_names):
