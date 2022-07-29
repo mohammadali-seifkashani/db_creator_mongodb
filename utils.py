@@ -1,3 +1,4 @@
+import pickle
 from time import time
 import json
 
@@ -20,3 +21,13 @@ def time_decorator(func):
         return result
 
     return wrap_func
+
+
+def save_pickle(obj, filename):
+    with open(filename, 'wb') as file:
+       pickle.dump(obj, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def load_pickle(filename):
+    with open(filename, 'rb') as file:
+        return pickle.load(file)

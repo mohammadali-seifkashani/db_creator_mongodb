@@ -53,6 +53,7 @@ def handle_text_data(baseaddr, existing_column_names):
             continue
         elif filename_without_extension in existing_column_names:
             yield result
+            continue
 
         f = open(os.path.join(baseaddr, filename), 'r', encoding='utf8')
         lines = f.read().strip('\n').split('\n')
@@ -79,6 +80,7 @@ def handle_json_data(baseaddr, existing_column_names):
             continue
         elif filename_without_extension in existing_column_names:
             yield result
+            continue
 
         d = load_json(os.path.join(baseaddr, filename))
         for i in range(len(d)):
@@ -101,7 +103,8 @@ def handle_excel_data(baseaddr, existing_column_names):
             continue
         elif filename_without_extension in existing_column_names:
             yield result
-            
+            continue
+
         filename_extension = os.path.splitext(filename)[1]
         if filename_extension == '.xlsx':
             df = pd.read_excel(os.path.join(baseaddr, filename))
