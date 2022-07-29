@@ -26,30 +26,30 @@ def check_dir_files_type(baseaddr):
     return extension
 
 
-def load_data(baseaddr, existing_table_names):
+def load_data(baseaddr, existing_column_names):
     data = None
     extension = check_dir_files_type(baseaddr)
 
     if extension == '.txt':
-        data = handle_text_data(baseaddr, existing_table_names)
+        data = handle_text_data(baseaddr, existing_column_names)
     elif extension == '.json':
-        data = handle_json_data(baseaddr, existing_table_names)
+        data = handle_json_data(baseaddr, existing_column_names)
     elif extension in ['.csv', '.xlsx']:
-        data = handle_excel_data(baseaddr, existing_table_names)
+        data = handle_excel_data(baseaddr, existing_column_names)
     elif extension == '':
-        data = handle_dir_data(baseaddr, existing_table_names)
+        data = handle_dir_data(baseaddr, existing_column_names)
 
     return data
 
 
-def handle_text_data(baseaddr, existing_table_names):
+def handle_text_data(baseaddr, existing_column_names):
     for filename in os.listdir(baseaddr):
-        if filename == 'columns_format.json':
+        filename_without_extension = os.path.splitext(filename)[0]
+        if filename_without_extension == 'columns_format':
             continue
-        elif filename in existing_table_names:
+        elif filename_without_extension in existing_column_names:
             yield False
 
-        filename_without_extension = os.path.splitext(filename)[0]
         result = {
             'table_name': filename_without_extension,
             'rows': []
@@ -68,14 +68,14 @@ def handle_text_data(baseaddr, existing_table_names):
         yield result
 
 
-def handle_json_data(baseaddr, existing_table_names):
+def handle_json_data(baseaddr, existing_column_names):
     for filename in os.listdir(baseaddr):
-        if filename == 'columns_format.json':
+        filename_without_extension = os.path.splitext(filename)[0]
+        if filename_without_extension == 'columns_format':
             continue
-        elif filename in existing_table_names:
+        elif filename_without_extension in existing_column_names:
             yield False
 
-        filename_without_extension = os.path.splitext(filename)[0]
         result = {
             'table_name': filename_without_extension,
             'rows': []
@@ -90,14 +90,14 @@ def handle_json_data(baseaddr, existing_table_names):
         yield result
 
 
-def handle_excel_data(baseaddr, existing_table_names):
+def handle_excel_data(baseaddr, existing_column_names):
     for filename in os.listdir(baseaddr):
-        if filename == 'columns_format.json':
+        filename_without_extension = os.path.splitext(filename)[0]
+        if filename_without_extension == 'columns_format':
             continue
-        elif filename in existing_table_names:
+        elif filename_without_extension in existing_column_names:
             yield False
 
-        filename_without_extension = os.path.splitext(filename)[0]
         result = {
             'table_name': filename_without_extension,
             'rows': []
@@ -111,11 +111,11 @@ def handle_excel_data(baseaddr, existing_table_names):
         yield result
 
 
-def handle_dir_data(baseaddr, existing_table_names):
+def handle_dir_data(baseaddr, existing_column_names):
     for table_name in os.listdir(baseaddr):
         if table_name == 'columns_format.json':
             continue
-        elif table_name in existing_table_names:
+        elif table_name in existing_column_names:
             yield False
 
         result = {
@@ -126,17 +126,17 @@ def handle_dir_data(baseaddr, existing_table_names):
             for filename in os.listdir(os.path.join(baseaddr, table_name, filename_id)):
                 if filename == f'{filename_id}.txt':
                     data = handle_text_data(
-                        os.path.join(baseaddr, table_name, filename_id, filename), existing_table_names)
+                        os.path.join(baseaddr, table_name, filename_id, filename), existing_column_names)
                     row = data['rows'][0]
                     break
                 elif filename == f'{filename_id}.json':
                     data = handle_json_data(
-                        os.path.join(baseaddr, table_name, filename_id, filename), existing_table_names)
+                        os.path.join(baseaddr, table_name, filename_id, filename), existing_column_names)
                     row = data['rows'][0]
                     break
                 elif filename in [f'{filename_id}.csv', f'{filename_id}.xlsx']:
                     data = handle_excel_data(
-                        os.path.join(baseaddr, table_name, filename_id, filename), existing_table_names)
+                        os.path.join(baseaddr, table_name, filename_id, filename), existing_column_names)
                     row = data['rows'][0]
                     break
 
