@@ -47,15 +47,32 @@ class MongoDB:
 
     def get_collection(self, collection_name, columns=['*']):
         if columns == ['*']:
+            return self.db[collection_name].find()
+        else:
+            columns_dict = {column: 1 for column in columns}
+            columns_dict['_id'] = 0
+            return self.db[collection_name].find({}, columns_dict)
+
+    def get_collection_generator(self, collection_name, columns=['*']):
+        if columns == ['*']:
             yield from self.db[collection_name].find()
         else:
             columns_dict = {column: 1 for column in columns}
             columns_dict['_id'] = 0
             yield from self.db[collection_name].find({}, columns_dict)
 
-    def get_database(self, columns):
+    def get_database_generator(self, columns):
         collection_names = self.get_collection_names()
         # self.cursor.itersize = 10000
         for i, t in enumerate(collection_names):
             print(i, t)
             yield self.get_collection(t, columns)
+
+    def get_database(self, columns):
+        collection_names = self.get_collection_names()
+        # self.cursor.itersize = 10000
+        for i, t in enumerate(collection_names):
+            print(i, t)
+            result[t] = self.get_collection(t, columns)
+
+        return result
