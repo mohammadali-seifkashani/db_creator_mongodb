@@ -11,12 +11,9 @@ class MongoDB:
 
     def create(self, dbname):
         pass
-        # myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-        # self.db = myclient[dbname]
 
     def create_collection(self, collection_name):
         pass
-        # table = self.db[collection_name]
 
     @time_decorator
     def fill_table(self, collection_name, data):
@@ -65,13 +62,6 @@ class MongoDB:
             columns_dict['_id'] = 0
             yield from self.db[collection_name].find({}, columns_dict)
 
-    def get_database_generator(self, columns):
-        collection_names = self.get_collection_names()
-        # self.cursor.itersize = 10000
-        for i, t in enumerate(collection_names):
-            print(i, t)
-            yield self.get_collection(t, columns)
-
     def get_database(self, columns):
         result = {}
         collection_names = self.get_collection_names()
@@ -81,3 +71,10 @@ class MongoDB:
             result[t] = self.get_collection(t, columns)
 
         return result
+
+    def get_database_generator(self, columns):
+        collection_names = self.get_collection_names()
+        # self.cursor.itersize = 10000
+        for i, t in enumerate(collection_names):
+            print(i, t)
+            yield self.get_collection(t, columns)
