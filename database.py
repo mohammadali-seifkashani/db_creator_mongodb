@@ -24,18 +24,18 @@ class MongoDB:
         existing_collection_names = self.get_collection_names()
         if 'general' in columns:
             for i, data in enumerate(load_data(baseaddr, existing_collection_names)):
-                print(i, data['table_name'])
-                if not data:
+                print(i, data['collection_name'])
+                if not data['rows']:
                     continue
                 json_data = [dict(zip(columns['general'], r)) for r in data['rows']]
-                self.fill_collection(data['table_name'], json_data)
+                self.fill_collection(data['collection_name'], json_data)
         else:
             for i, data in enumerate(load_data(baseaddr, existing_collection_names)):
-                print(i, data['table_name'])
-                if not data:
+                print(i, data['collection_name'])
+                if not data['rows']:
                     continue
-                json_data = [dict(zip(columns[data['table_name']], r)) for r in data['rows']]
-                self.fill_collection(data['table_name'], json_data)
+                json_data = [dict(zip(columns[data['collection_name']], r)) for r in data['rows']]
+                self.fill_collection(data['collection_name'], json_data)
 
     @staticmethod
     def remove(dbname):
@@ -77,3 +77,16 @@ class MongoDB:
             result[t] = self.get_collection(t, columns)
 
         return result
+
+    def get_collection_to_file(self, collection_name, format):
+        collection = self.get_collection(collection_name)
+        if format == 'txt':
+            pass
+        elif format == 'json':
+            pass
+        elif format == 'xlsx':
+            pass
+        elif format == 'csv':
+            pass
+        elif format == 'pkl':
+            pass
