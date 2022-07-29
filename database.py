@@ -1,3 +1,5 @@
+import os
+
 import pymongo
 from dataloader import load_data
 from utils import time_decorator
@@ -46,6 +48,8 @@ class MongoDB:
         return self.db.list_collection_names()
 
     def get_collection(self, collection_name, columns=['*']):
+        if collection_name not in self.get_collection_names():
+            raise Exception('collection does not exist.')
         if columns == ['*']:
             return self.db[collection_name].find()
         else:
@@ -78,15 +82,22 @@ class MongoDB:
 
         return result
 
-    def get_collection_to_file(self, collection_name, format):
+    def collection_to_file(self, collection_name, out_address):
         collection = self.get_collection(collection_name)
-        if format == 'txt':
+        extension = os.path.splitext(out_address)[1]
+        if extension == '.txt':
+            result = ''
+            for row in collection:
+                row_without_None = ['' if i is None else i for i in list(row.values())[1:]]
+                result += '\t'.join(row_without_None) + '\n'
+            f = open(out_address, 'w')
+            f.write(result)
+            f.close()
+        elif extension == '.json':
             pass
-        elif format == 'json':
+        elif extension == '.xlsx':
             pass
-        elif format == 'xlsx':
+        elif extension == '.csv':
             pass
-        elif format == 'csv':
-            pass
-        elif format == 'pkl':
+        elif extension == '.pkl':
             pass
