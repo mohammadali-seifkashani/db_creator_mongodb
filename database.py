@@ -89,6 +89,7 @@ class MongoDB:
         if extension == '.txt':
             result = ''
             for row in collection:
+                row.pop('_id')
                 row_without_None = ['' if i is None else i for i in list(row.values())[1:]]
                 result += '\t'.join(row_without_None) + '\n'
             f = open(out_address, 'w')
